@@ -5,6 +5,8 @@ import http from 'http';
 import express from "express";
 import cookieSession from "cookie-session";
 import cors from 'cors';
+import { envConfig } from './config/env.config';
+import {AppDataSource} from "@/database/config";
 
 async function bootstrap() {
   const app = express();
@@ -14,24 +16,32 @@ async function bootstrap() {
   app.use(
     cookieSession({
       name: 'session',
-      keys: ['djjw2i348282', 'jduwu2uu4'],
-      maxAge: 24 * 7 * 3600000
+      keys: [envConfig.SECRET_KEY_ONE, envConfig.SECRET_KEY_TWO],
+      maxAge: 24 * 7 * 3600000,
+      secure: envConfig.NODE_ENV !== 'development',
+      ...(envConfig.NODE_ENV !== 'development' && {
+        sameSite: 'none'
+      }),
+      httpOnly: envConfig.NODE_ENV !== 'development'
     })
   );
   const corsOptions = {
-    origin: ['http://localhost:4000', 'http://localhost:4200'],
+    origin: [envConfig.REACT_URL, envConfig.ANGULAR_URL],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
   };
   app.use(cors(corsOptions));
 
   try {
-    httpServer.listen(5000, () => {
-      console.log(`Server running on port 5000`);
+    httpServer.listen(envConfig.PORT, () => {
+      console.log(`Server running on port ${envConfig.PORT}`);
     })
   } catch (error) {
     console.log('Error starting server');
   }
 }
 
-bootstrap().catch(console.error);
+AppDataSource.initialize().then(() => {
+  console.log('PostgreSQL database connected successfully.');
+  bootstrap().catch(console.error);
+}).catch((error) => console.log('Error connecting to PostgreSQL.', error));

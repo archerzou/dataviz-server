@@ -16,31 +16,19 @@ import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHt
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { ApolloServerPluginLandingPageDisabled } from '@apollo/server/plugin/disabled';
 import { ExpressContextFunctionArgument, expressMiddleware } from '@apollo/server/express4';
+import { AppContext } from './interfaces/auth.interface';
+
 
 async function bootstrap() {
   const app = express();
   const httpServer: http.Server = new http.Server(app);
 
-  const typeDefs = `#graphql
-    type Book {
-      title: String!
-    }
-    type Query {
-      books: [Book]
-    }
-  `
-  const resolvers = {
-    Query: {
-      books: () => []
-    }
-  }
-
   const schema: GraphQLSchema = makeExecutableSchema({
-    typeDefs,
-    resolvers
+    typeDefs: mergedGQLSchema,
+    resolvers: mergedGQLResolvers
   });
 
-  const server = new ApolloServer({
+  const server = new ApolloServer<BaseContext | AppContext>({
     schema,
     formatError(error:GraphQLFormattedError){
       return {

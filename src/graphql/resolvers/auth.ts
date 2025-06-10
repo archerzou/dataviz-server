@@ -1,6 +1,6 @@
 import { AppContext, IAuth, IDataSource } from "@/interfaces/auth.interface";
 import { IAuthPayload } from "@/interfaces/datasource.interface";
-// import { getPostgreSQLCollections } from "@/services/PGConnection";
+import { getPostgreSQLCollections } from "@/services/PGConnection";
 import { AuthService } from "@/services/auth/AuthService";
 import { DatasourceService } from "@/services/DatasourceService";
 import { authenticateGraphQLRoute } from "@/utils/token-util";
@@ -14,9 +14,9 @@ export const AuthResolver = {
       const result: IDataSource[] = await DatasourceService.getDataSources(`${req.currentUser?.userId}`);
       if (result.length > 0) {
         const activeProject = req.currentUser?.activeProject ? req.currentUser?.activeProject : result[0];
-        // if (activeProject.type === 'postgresql') {
-        //   collections = await getPostgreSQLCollections(activeProject.projectId);
-        // }
+        if (activeProject.type === 'postgresql') {
+          collections = await getPostgreSQLCollections(activeProject.projectId);
+        }
       }
 
       return {

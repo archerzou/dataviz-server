@@ -8,6 +8,7 @@ import { generateAccessToken } from "@/utils/token-util";
 import { GraphQLError } from "graphql";
 import { IAuthPayload, IDataSourceProjectID } from "@/interfaces/datasource.interface";
 import { DatasourceService } from "../DatasourceService";
+import { getPostgreSQLCollections } from "@/services/PGConnection";
 
 export class AuthService {
   static async register(input: IAuth, context: AppContext): Promise<IAuthPayload> {
@@ -72,9 +73,9 @@ export class AuthService {
         projectId: result[0].projectId,
         type: result[0].type
       }
-      // if (activeProject.type === 'postgresql') {
-      //   collections = await getPostgreSQLCollections(result[0].projectId);
-      // }
+      if (activeProject.type === 'postgresql') {
+        collections = await getPostgreSQLCollections(result[0].projectId);
+      }
     }
 
     const payload: TokenPayload = {

@@ -1,41 +1,27 @@
-
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2018",
     "module": "CommonJS",
-    "lib": ["ES2020", "ESNext.AsyncIterable"],
+    "lib": ["ES2018", "ESNext.AsyncIterable"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "moduleResolution": "node",
     "outDir": "./build",
-    "rootDir": "./src",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "strict": true,
     "strictPropertyInitialization": false,
     "skipLibCheck": true,
-    "sourceMap": false,
-    "declaration": false,
-    "removeComments": true,
+    "sourceMap": true,
     "baseUrl": ".",
+    "rootDir": ".",
+    "plugins": [
+      { "transform": "typescript-transform-paths" },
+      { "transform": "typescript-transform-paths", "afterDeclarations": true }
+    ],
     "paths": {
       "@/*": ["src/*"]
-    },
-    "typeRoots": ["./node_modules/@types"],
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    }
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "build",
-    "**/*.test.ts",
-    "**/*.spec.ts"
-  ],
-  "ts-node": {
-    "require": ["tsconfig-paths/register"]
-  }
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "build"]
 }
